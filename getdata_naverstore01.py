@@ -122,7 +122,7 @@ def main():
 
         data = dataHandling(mydatas)
 
-        data.to_csv('data_%s_%s.csv'%(s_name,p_number), mode = 'w', encoding='utf-8', iindex= False)
+        data.to_csv('data_%s_%s.csv'%(s_name,p_number), mode = 'w', encoding='utf-8', index= False)
         print('저장 완료')
 
 if __name__ == "__main__":
