@@ -1,3 +1,5 @@
+#일반 text 파일 가지고 noun count 하기 
+
 # -*- coding: utf-8 -*-
 
 import pandas as pd
