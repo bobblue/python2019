@@ -4,7 +4,7 @@ import pandas as pd
 from konlpy.tag import Twitter
 from collections import Counter
 
-data = pd.read_csv("C:/Users/leevi/PycharmProjects/naverstore/data_lologirl_359085685.csv")
+data = pd.read_csv("C:/Users/leevi/PycharmProjects/naverstore/data_lologirl_2462927537.csv")
 
 nlp = Twitter()
 
@@ -42,4 +42,4 @@ for i in a:
 data = pd.concat([df1,df2,df3])
 data = data.reset_index()[['만족도','단어','빈도수']]
 
-data.to_csv('data_nouns_parsing.csv', mode = 'w', index = True, encoding='utf-8', index_label= False)
+data.to_csv('data_nouns_parsing4.csv', mode = 'w', index = False, encoding='utf-8')
