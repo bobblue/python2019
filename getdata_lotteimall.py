@@ -15,9 +15,6 @@ df_review = []
 df_date = []
 df_star = []
 
-정가에 샀으면 반품했겠지만 할인해서 샀으니 득템
-#divCustMultiComment > div.area_list_comment > ul > li:nth-child(1) > div.cont > a > span
-
 #리뷰 모으기
 reviews = soup.select(
     'div.cont > a > span'
