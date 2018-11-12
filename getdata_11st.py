@@ -25,10 +25,10 @@ def getcomment(i, product_number):
     url5 = '&pageTypCd=first&reviewDispYn=Y&isPreview=false&reviewOptDispYn=Y&optSearchBtnAndGraphLayer=Y&reviewBottomBtn=Y&openDetailContents=Y&pageSize=100&isIgnoreAuth=false&lctgrNo=1001397&leafCtgrNo=0&groupProductNo=0&groupFirstViewPrdNo=0&selNo=41580890#this'
 
     url = url1 + product_number + url3 + url4 + url5
-    print(url)
+    #print(url)
     return url
 
-def dataHandling(soup,product_num):
+def dataHandling(soup,product_number):
     df_feed_code = []
     df_review = []
     df_date = []
@@ -83,10 +83,12 @@ def dataHandling(soup,product_num):
     for code in codes :
         code_imsi = code.get('data-contno')
         #print(code_imsi)
-        code_sum = '11st_' + '%s_'%(product_num) + str(code_imsi)
+        code_sum = '11st_' + '%s_'%(product_number) + str(code_imsi)
         df_feed_code.append(code_sum)
 
     print(len(df_review),len(df_star),len(df_date),len(df_product))
+
+
     # 구매평, 날짜, 평점, 상품을 합하여 하나의 데이터 프레임으로 생성
     df1 = pd.DataFrame({'feed_code':df_feed_code,'content':df_review, 'date':df_date, 'star':df_star, 'product_select':df_product})
     df1 = df1[['feed_code','content', 'date', 'star', 'product_select']]
@@ -94,16 +96,16 @@ def dataHandling(soup,product_num):
 
 
 def main():
-    data_result = pd.DataFrame(columns=('feed_code','content', 'date', 'star', 'product_select'))
-    url_imsi = []
-
     for j in count():
+        data_result = pd.DataFrame(columns=('feed_code', 'content', 'date', 'star', 'product_select'))
+        url_imsi = []
         url_imsi = (str(input('{0}번째 url을 입력하세요 : '.format(j + 1))))
         p = re.compile('prdNo=\d+')
         product_number = str(p.search(url_imsi).group())
         product_number = product_number.replace('prdNo=', '')
-        #print(product_number)
+        print(product_number)
 
+        # 500페이지 까지 크롤링 하겠다는 의미 
         for i in range(1,500):
             i = str(i)
             url = getcomment(i, product_number)
@@ -119,3 +121,4 @@ if __name__ == "__main__":
     main()
 
 # db연결해서 저장하는 부분 수정하기
+
