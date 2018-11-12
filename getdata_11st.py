@@ -28,7 +28,7 @@ def getcomment(i, product_number):
     print(url)
     return url
 
-def dataHandling(soup,product_number):
+def dataHandling(soup,product_num):
     df_feed_code = []
     df_review = []
     df_date = []
@@ -78,13 +78,12 @@ def dataHandling(soup,product_number):
         #print(product)
 
     #feed code 부여하기
-    codes = soup.select(
-        'p.bbs_summary'
-    )
+    codes = soup.select('p.bbs_summary')
+
     for code in codes :
-        #print(code)
-        code_imsi = 999
-        code_sum = '11st_' + 'product_num' + str(code_imsi)
+        code_imsi = code.get('data-contno')
+        #print(code_imsi)
+        code_sum = '11st_' + '%s_'%(product_num) + str(code_imsi)
         df_feed_code.append(code_sum)
 
     print(len(df_review),len(df_star),len(df_date),len(df_product))
@@ -105,7 +104,7 @@ def main():
         product_number = product_number.replace('prdNo=', '')
         #print(product_number)
 
-        for i in range(1,10):
+        for i in range(1,500):
             i = str(i)
             url = getcomment(i, product_number)
             soup = get_request_url(url)
@@ -118,3 +117,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# db연결해서 저장하는 부분 수정하기
