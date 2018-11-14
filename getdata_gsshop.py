@@ -10,32 +10,30 @@ def get_numbers(url_origin):
     req = requests.get(url_origin)
     html = req.text
     soup_origin = BeautifulSoup(html, 'html.parser')
-
     deal_num = soup_origin.find("meta",  property="og:url")
     deal_num = str(deal_num)
     p = re.compile('dealNo=\d+')
     deal_number = str(p.search(deal_num).group()).replace('dealNo=', '')
     # print(deal_number)
 
+    return deal_number
 
-    url_prdcd01 = 'http://www.gsshop.com/mi15/knownew/revw/revwList.gs?prdid='
-    url_prdcd02 = '&dealFlg=Y&contentDisNoYn=N'
-    url_prdcd = url_prdcd01 + deal_number + url_prdcd02
-
-    req = requests.get(url_prdcd)
+def find_prdcd_num(url_origin):
+    # let's find prdcd numbers!
+    req = requests.get(url_origin)
     html = req.text
-    soup_prdcd = BeautifulSoup(html, 'html.parser')
+    soup_origin = BeautifulSoup(html, 'html.parser')
+    data = soup_origin.find_all("div", attrs={"data-prdcd": True})
 
-    prdcd_num = soup_prdcd.select(
-        'div.commentN_list > dl.insert-img'
-    )
+    prdcd_list = []
+    for i in data:
+        prdcd_num_str = str(i)
+        k = re.compile('data-prdcd="\d+')
+        prdcd_number = str(k.search(prdcd_num_str).group()).replace('data-prdcd="', '')
+        prdcd_list.append(prdcd_number)
+    prdcd_list = list(set(prdcd_list))
 
-    prdcd_num_str = str(prdcd_num)
-    k = re.compile('data-prdcd="\d+')
-    prdcd_number = str(k.search(prdcd_num_str).group()).replace('data-prdcd="', '')
-#    print(prdcd_number)
-
-    return deal_number, prdcd_number
+    return prdcd_list
 
 def get_request_url(deal_number, prdcd_number, page_number):
     url1 = 'http://www.gsshop.com/mi15/knownew/revw/page/revwList.gs?prdid='
@@ -132,22 +130,25 @@ def dataHandling(soup,deal_number):
 
 
 def main():
-
     for j in count():
         data_result = pd.DataFrame(columns=('feed_code', 'content', 'date', 'star', 'product_select'))
         url_imsi = []
         url_origin = (str(input('{0}번째 url을 입력하세요 : '.format(j + 1))))
-        # 800페이지 까지 크롤링 하겠다는 의미
-        for i in range(1,800):
-            page_number = str(i)
-            deal_number,prdcd_number= get_numbers(url_origin)
-            soup = get_request_url(deal_number, prdcd_number, page_number)
-            df1, df_date = dataHandling(soup,deal_number)
-            if len(df_date) == 0 :
-                break
-            data_result = pd.concat([data_result, df1], axis=0)
+        prdcd_list = find_prdcd_num(url_origin)
+        deal_number = get_numbers(url_origin)
 
- #       print(data_result)
+        for p in prdcd_list:
+            prdcd_number = str(p)
+
+            for i in range(1, 800):
+                page_number = str(i)
+                soup = get_request_url(deal_number, prdcd_number, page_number)
+                df1, df_date = dataHandling(soup, deal_number)
+                data_result = pd.concat([data_result, df1], axis=0)
+                if len(df_date) == 0:
+                    break
+
+        #       print(data_result)
         data_result.to_csv('data_GSshop_%s.csv'%(deal_number), mode='w', encoding='utf-8', index=False)
         print('저장 완료')
 
