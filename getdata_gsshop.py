@@ -17,13 +17,16 @@ def get_numbers(url_origin):
     deal_number = str(p.search(deal_num).group()).replace('dealNo=', '')
     # print(deal_number)
 
+    prdc_list = []
     prdc = soup_origin.select("div.img_sumry")
     for i in prdc:
         i_str = str(i)
         p = re.compile('\d+')
         prdc_number = p.findall(i_str)
-        last_list = prdc_number
-    prdc_number = last_list[0]
+        prdc_list.append(prdc_number[0])
+
+    prdc_number = prdc_list[1]
+
     return deal_number, prdc_number
 
 def get_request_url(deal_number, prdc_number, page_number):
@@ -96,6 +99,7 @@ def dataHandling(soup,deal_number):
     codes = soup.select('span.writer')
     for code in codes:
         code_imsi = str(code.text)
+        code_imsi = code_imsi.replace('*', '')
         # print(code_imsi)
         code_sum = 'GSshop' + '%s_' % (deal_number) + code_imsi
         df_feed_code.append(code_sum)
@@ -121,7 +125,7 @@ def main():
         url_imsi = []
         url_origin = (str(input('{0}번째 url을 입력하세요 : '.format(j + 1))))
         # 800페이지 까지 크롤링 하겠다는 의미
-        for i in range(1,500):
+        for i in range(1,10):
             page_number = str(i)
             deal_number,prdc_number = get_numbers(url_origin)
             soup = get_request_url(deal_number, prdc_number, page_number)
