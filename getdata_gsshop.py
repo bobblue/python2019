@@ -33,7 +33,7 @@ def get_numbers(url_origin):
     prdcd_num_str = str(prdcd_num)
     k = re.compile('data-prdcd="\d+')
     prdcd_number = str(k.search(prdcd_num_str).group()).replace('data-prdcd="', '')
-    print(prdcd_number)
+#    print(prdcd_number)
 
     return deal_number, prdcd_number
 
@@ -71,6 +71,11 @@ def dataHandling(soup,deal_number):
     )
     for review in reviews:
         review_clean = review.text
+        review_clean = review_clean.replace('.','')
+        review_clean = review_clean.replace(',', '')
+        review_clean = review_clean.replace('\n', '')
+        review_clean = review_clean.replace('\r', '')
+        review_clean = review_clean.replace('\t', '')
         df_review.append(review_clean)
 
     # 날짜 모으기
@@ -123,7 +128,7 @@ def dataHandling(soup,deal_number):
     df1 = pd.DataFrame({'feed_code': df_feed_code, 'content': df_review, 'date': df_date, 'star': df_star,
                         'product_select': df_product})
     df1 = df1[['feed_code', 'content', 'date', 'star', 'product_select']]
-    return df1
+    return df1, df_date
 
 
 def main():
@@ -133,11 +138,13 @@ def main():
         url_imsi = []
         url_origin = (str(input('{0}번째 url을 입력하세요 : '.format(j + 1))))
         # 800페이지 까지 크롤링 하겠다는 의미
-        for i in range(1,100):
+        for i in range(1,800):
             page_number = str(i)
             deal_number,prdcd_number= get_numbers(url_origin)
             soup = get_request_url(deal_number, prdcd_number, page_number)
-            df1 = dataHandling(soup,deal_number)
+            df1, df_date = dataHandling(soup,deal_number)
+            if len(df_date) == 0 :
+                break
             data_result = pd.concat([data_result, df1], axis=0)
 
  #       print(data_result)
