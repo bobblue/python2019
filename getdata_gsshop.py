@@ -62,6 +62,7 @@ def dataHandling(soup,deal_number):
     df_date = []
     df_star = []
     df_product = []
+    df_select = []
 
     # 리뷰 모으기 (리뷰가 한줄만 크롤링 된다! 에러!)
     reviews = soup.select(
@@ -105,6 +106,10 @@ def dataHandling(soup,deal_number):
     for product in products:
         product = product.text
         df_product.append(product)
+        p = re.compile('\d+')
+        select = p.search(product)
+        select = str(select.group())
+        df_select.append(select)
 
     # feed_code 부여하기
     codes = soup.select('span.writer')
@@ -124,14 +129,14 @@ def dataHandling(soup,deal_number):
 
     # 구매평, 날짜, 평점, 상품을 합하여 하나의 데이터 프레임으로 생성
     df1 = pd.DataFrame({'feed_code': df_feed_code, 'content': df_review, 'date': df_date, 'star': df_star,
-                        'product_select': df_product})
-    df1 = df1[['feed_code', 'content', 'date', 'star', 'product_select']]
+                        'product_select': df_product, 'select_number':df_select})
+    df1 = df1[['feed_code', 'content', 'date', 'star', 'product_select', 'select_number']]
     return df1, df_date
 
 
 def main():
     for j in count():
-        data_result = pd.DataFrame(columns=('feed_code', 'content', 'date', 'star', 'product_select'))
+        data_result = pd.DataFrame(columns=('feed_code', 'content', 'date', 'star', 'product_select','select_number'))
         url_imsi = []
         url_origin = (str(input('{0}번째 url을 입력하세요 : '.format(j + 1))))
         prdcd_list = find_prdcd_num(url_origin)
