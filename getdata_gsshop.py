@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 
-# 오리지널 ulr 을 넣어서 deal_number 와 prdc_number 를 추출한다
+# 오리지널 ulr 을 넣어서 deal_number 와 prdcd_number 를 추출한다
 def get_numbers(url_origin):
   #  url_origin = 'http://www.gsshop.com/deal/deal.gs?dealNo=31981868&lseq=409019-1&arm=2-U-U&expId=pcBestDeal#ProTabN02'
     req = requests.get(url_origin)
@@ -17,26 +17,34 @@ def get_numbers(url_origin):
     deal_number = str(p.search(deal_num).group()).replace('dealNo=', '')
     # print(deal_number)
 
-    prdc_list = []
-    prdc = soup_origin.select("div.img_sumry")
-    for i in prdc:
-        i_str = str(i)
-        p = re.compile('\d+')
-        prdc_number = p.findall(i_str)
-        prdc_list.append(prdc_number[0])
 
-    prdc_number = prdc_list[1]
+    url_prdcd01 = 'http://www.gsshop.com/mi15/knownew/revw/revwList.gs?prdid='
+    url_prdcd02 = '&dealFlg=Y&contentDisNoYn=N'
+    url_prdcd = url_prdcd01 + deal_number + url_prdcd02
 
-    return deal_number, prdc_number
+    req = requests.get(url_prdcd)
+    html = req.text
+    soup_prdcd = BeautifulSoup(html, 'html.parser')
 
-def get_request_url(deal_number, prdc_number, page_number):
+    prdcd_num = soup_prdcd.select(
+        'div.commentN_list > dl.insert-img'
+    )
+
+    prdcd_num_str = str(prdcd_num)
+    k = re.compile('data-prdcd="\d+')
+    prdcd_number = str(k.search(prdcd_num_str).group()).replace('data-prdcd="', '')
+    print(prdcd_number)
+
+    return deal_number, prdcd_number
+
+def get_request_url(deal_number, prdcd_number, page_number):
     url1 = 'http://www.gsshop.com/mi15/knownew/revw/page/revwList.gs?prdid='
     url2 = '&dealFlg=Y&$listing=1&'
     url3 = '$page.number='
     url4 = '&$searchPrdCd='
     url5 = '&contentDisNoYn=N'
 
-    url = url1 + deal_number + url2 + url3 + page_number + url4 + prdc_number + url5
+    url = url1 + deal_number + url2 + url3 + page_number + url4 + prdcd_number + url5
     print(url)
 
     try :
@@ -125,14 +133,14 @@ def main():
         url_imsi = []
         url_origin = (str(input('{0}번째 url을 입력하세요 : '.format(j + 1))))
         # 800페이지 까지 크롤링 하겠다는 의미
-        for i in range(1,10):
+        for i in range(1,100):
             page_number = str(i)
-            deal_number,prdc_number = get_numbers(url_origin)
-            soup = get_request_url(deal_number, prdc_number, page_number)
+            deal_number,prdcd_number= get_numbers(url_origin)
+            soup = get_request_url(deal_number, prdcd_number, page_number)
             df1 = dataHandling(soup,deal_number)
             data_result = pd.concat([data_result, df1], axis=0)
 
-        print(data_result)
+ #       print(data_result)
         data_result.to_csv('data_GSshop_%s.csv'%(deal_number), mode='w', encoding='utf-8', index=False)
         print('저장 완료')
 
@@ -140,7 +148,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
