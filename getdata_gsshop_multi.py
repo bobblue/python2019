@@ -1,3 +1,8 @@
+
+# 상품을 여러개 선택할 수 있는 경우 크롤링 코드
+# http://www.gsshop.com/deal/deal.gs?dealNo=26991037&kwd=%EC%9A%94%EA%B0%80%EB%B3%B5&gsid=srcheshop-lresult&lseq=396001#ProTabN02
+# url 안에 dealNo 가 들어 있을 때 사용
+
 from itertools import count
 import requests
 from bs4 import BeautifulSoup
@@ -154,7 +159,7 @@ def main():
                     break
 
         #       print(data_result)
-        data_result.to_csv('data_GSshop_%s.csv'%(deal_number), mode='w', encoding='utf-8', index=False)
+        data_result.to_csv('요가복_data_GSshop_%s.csv'%(deal_number), mode='w', encoding='utf-8', index=False)
         print('저장 완료')
 
 
