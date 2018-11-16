@@ -90,6 +90,7 @@ def dataHandling(soup,deal_number):
 
     for date in dates:
         date = date.text
+        date = date.replace('.', '-')
         df_date.append(date)
 
     # 평점 모으기
