@@ -65,6 +65,7 @@ def dataHandling(soup,deal_number):
 
     for date in dates:
         date = date.text
+        date = date.replace('.', '-')
         df_date.append(date)
 
     # 평점 모으기
@@ -111,7 +112,7 @@ def dataHandling(soup,deal_number):
     df1 = pd.DataFrame({'feed_code': df_feed_code, 'content': df_review, 'date': df_date, 'star': df_star,
                         'product_select': df_product, 'select_number':df_select})
     df1 = df1[['feed_code', 'content', 'date', 'star', 'product_select', 'select_number']]
-    return df1, df_date
+    return df1, df_date, df_product
 
 
 def main():
@@ -123,12 +124,13 @@ def main():
         for i in range(1, 800):
             page_number = str(i)
             soup = get_request_url(deal_number, page_number)
-            df1, df_date = dataHandling(soup, deal_number)
-            data_result = pd.concat([data_result, df1], axis=0)
+            df1, df_date, df_product = dataHandling(soup, deal_number)
             if len(df_date) == 0:
                 break
+            data_result = pd.concat([data_result, df1], axis=0)
 
-        #       print(data_result)
+
+        #print(data_result)
         data_result.to_csv('레깅스_data_GSshop_%s.csv'%(deal_number), mode='w', encoding='utf-8', index=False)
         print('저장 완료')
 
