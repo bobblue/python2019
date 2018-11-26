@@ -6,11 +6,14 @@ from selenium.webdriver.common.keys import Keys
 from pandas import DataFrame as df  # dataframe 생성을 위함
 import time  # time.sleep을 위함
 
+# 크롤링할 키워드 
 keyword = '20대 여자 일상'
 
 driver = webdriver.Chrome("c:/chromedriver")
 srt_download_path = "c:/pythondata"
-num_pagedown = 0
+
+# 크롤링할 페이지 설정(한 페이지에 20개씩임)
+num_pagedown = 30
 start_subtitle_id = 0
 
 driver.get("https://www.youtube.com/results?sp=EgQQASgBQgQIARIA&search_query=" + keyword)  # 필터: 동영상+자막
