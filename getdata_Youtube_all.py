@@ -151,17 +151,8 @@ def get_all_info(keyword, dataset) :
     
         # 프린트해서 i 찍어보기
         print(i)
-        print('번째 크롤링 중')
-        
-    print(len(link))
-    print(len(date))
-    print(len(explain))
-    print(len(like))
-    print(len(unlike))
-    print(len(subscribe))
-    print(len(hit))
-    print(len(keyword))
-     
+        print('번째 영상 크롤링 중')
+       
 
     dataset2 = df({'url': link, \
                    'uploaded_date': date, \
