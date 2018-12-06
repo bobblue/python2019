@@ -88,11 +88,15 @@ def dataHandling(soup,product_number):
 
     print(len(df_review),len(df_star),len(df_date),len(df_product))
 
+    if len(df_review) ==len(df_star) == len(df_date) == len(df_product) :
+        pass
+    else :
+        return None
 
     # 구매평, 날짜, 평점, 상품을 합하여 하나의 데이터 프레임으로 생성
     df1 = pd.DataFrame({'feed_code':df_feed_code,'content':df_review, 'date':df_date, 'star':df_star, 'product_select':df_product})
     df1 = df1[['feed_code','content', 'date', 'star', 'product_select']]
-    return df1
+    return df1, df_date
 
 
 def main():
@@ -105,15 +109,22 @@ def main():
         product_number = product_number.replace('prdNo=', '')
         print(product_number)
 
-        # 500페이지 까지 크롤링 하겠다는 의미 
-        for i in range(1,500):
+        # 800페이지 까지 크롤링 하겠다는 의미
+        for i in range(1,900):
             i = str(i)
             url = getcomment(i, product_number)
             soup = get_request_url(url)
-            df1 = dataHandling(soup, product_number)
+
+            try :
+                df1, df_date = dataHandling(soup, product_number)
+            except Exception as e:
+                print("Error for dataHandling")
+
+            if len(df_date) == 0:
+                break
             data_result = pd.concat([data_result, df1], axis=0)
 
-        print(data_result)
+        #print(data_result)
         data_result.to_csv('data_11st_%s.csv'%(product_number), mode='w', encoding='utf-8', index=False)
         print('저장 완료')
 
