@@ -4,6 +4,7 @@ import pandas as pd
 import re
 from itertools import count
 
+
 def get_dealnumber(url_origin) :
     #url_origin = 'http://imvely.com/product/detail.html?product_no=15773&cate_no=41&display_group=2&crema-product-reviews-2-page=5'
     url_origin = str(url_origin)
@@ -31,6 +32,7 @@ def get_request_url(deal_number, page_number):
         return None
 
 def get_data(soup, deal_number):
+    shop_name = 'Imvely'
     df_feed_code = []
     df_review = []
     df_date = []
@@ -71,7 +73,17 @@ def get_data(soup, deal_number):
     for star in stars :
         star = star.text
         star = star.replace('- ', '')
-        df_star.append(star)
+        if str(star) == "그냥 그래요" :
+            star_ = '2'
+        elif str(star) == "보통이에요" :
+            star_ = '3'
+        elif str(star) == "맘에 들어요" :
+            star_ = '4'
+        elif str(star) == "아주 좋아요" :
+            star_ = '5'
+        else :
+            star_ = '1'
+        df_star.append(star_)
 
     products = soup.select(
         'span.review_option__product_option > span.review_option__product_option_value'
@@ -87,14 +99,14 @@ def get_data(soup, deal_number):
     else:
         return None
 
-    df1 = pd.DataFrame({'feed_code':df_feed_code,'content':df_review, 'date':df_date, 'star':df_star, 'product_select':df_product})
-    df1 = df1[['feed_code','content', 'date', 'star', 'product_select']]
+    df1 = pd.DataFrame({'shop_name':shop_name, 'deal_number':deal_number, 'feed_code':df_feed_code,'content':df_review, 'date':df_date, 'star':df_star, 'product_select':df_product})
+    df1 = df1[['shop_name', 'deal_number', 'feed_code','content', 'date', 'star', 'product_select']]
     return df1, df_star
 
 def main():
     for j in count():
         url_origin = str(input('{0}번째 url을 입력하세요 :'.format(j+1)))
-        data_result = pd.DataFrame(columns=('feed_code', 'content', 'date', 'star', 'product_select'))
+        data_result = pd.DataFrame(columns=('shop_name', 'deal_number','feed_code', 'content', 'date', 'star', 'product_select'))
         deal_number = get_dealnumber(url_origin)
 
         for i in range(1,900):
@@ -113,8 +125,8 @@ def main():
 
             data_result = pd.concat([data_result, df1], axis=0)
 
-    data_result.to_csv('Imvely_%s.csv' % (deal_number), mode='w', encoding='utf-8', index=False)
-    print('저장 완료')
+        data_result.to_csv('data_Imvely_%s.csv' % (deal_number), mode='w', encoding='utf-8', index=False)
+        print('저장 완료')
 
 if __name__ == "__main__" :
     main()
