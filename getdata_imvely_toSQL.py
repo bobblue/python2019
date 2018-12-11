@@ -14,7 +14,7 @@ def conn():
 
 def mysql_connection():
     try:
-        conn = pymysql.connect(host='211.252.87.245', user='root', password='leevi!@3', db='yoonah', charset='utf8')
+        conn = pymysql.connect(host='211.252.87.245', user='root', password='', db='yoonah', charset='utf8')
         # Connection 으로부터 Cursor 생성 , pymysql.cursors.DictCursor -- dictionary형태로 데이터 가져오게함. 아무것도 안쓰면 [0], [1] 형태로 데이터 가져다 써야함.
         curs = conn.cursor(pymysql.cursors.DictCursor)
     except Exception as e:
