@@ -17,6 +17,8 @@ for market in test:
     for market2 in test:
         ngram_elm[market2] = ngram.NGram.compare(market,market2)
     ngram_dict[market] = ngram_elm
+    
+#pd.DataFrame.from_dict(ngram_dict, orient='index').to_excel('c:/users/leevi/downloads/heatmap.xlsx')
 
 more_than_score = {}
 for key,value in ngram_dict.items():
@@ -29,6 +31,8 @@ for key,value in ngram_dict.items():
             pass
         more_than_score[key] = more_than_score_sub
 #print(more_than_score)
+
+#taget 정하기 위해 이거 먼저 해야 함 
 #pd.DataFrame.from_dict(more_than_score, orient='index').to_excel('c:/users/leevi/downloads/whats_same_word.xlsx')
 #print('이 결과값을 바탕으로 target 단어 추출해야함 -> test2로 고고')
 
