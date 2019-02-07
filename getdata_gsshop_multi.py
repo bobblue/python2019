@@ -12,33 +12,35 @@ import re
 # 오리지널 ulr 을 넣어서 deal_number 와 prdcd_number 를 추출한다
 def get_numbers(url_origin):
   #  url_origin = 'http://www.gsshop.com/deal/deal.gs?dealNo=31981868&lseq=409019-1&arm=2-U-U&expId=pcBestDeal#ProTabN02'
-    req = requests.get(url_origin)
-    html = req.text
-    soup_origin = BeautifulSoup(html, 'html.parser')
-    deal_num = soup_origin.find("meta",  property="og:url")
-    deal_num = str(deal_num)
+    deal_num = str(url_origin)
     p = re.compile('dealNo=\d+')
     deal_number = str(p.search(deal_num).group()).replace('dealNo=', '')
-    # print(deal_number)
-
+    #print(deal_number)
     return deal_number
 
 def find_prdcd_num(url_origin):
     # let's find prdcd numbers!
-    req = requests.get(url_origin)
-    html = req.text
-    soup_origin = BeautifulSoup(html, 'html.parser')
-    data = soup_origin.find_all("div", attrs={"data-prdcd": True})
+    try :
+        req = requests.get(url_origin)
+        html = req.text
+        soup_origin = BeautifulSoup(html, 'html.parser')
+       # print(soup_origin)
+        data = soup_origin.find_all("div", attrs={"data-prdcd": True})
+        #print(data)
 
-    prdcd_list = []
-    for i in data:
-        prdcd_num_str = str(i)
-        k = re.compile('data-prdcd="\d+')
-        prdcd_number = str(k.search(prdcd_num_str).group()).replace('data-prdcd="', '')
-        prdcd_list.append(prdcd_number)
-    prdcd_list = list(set(prdcd_list))
+        prdcd_list = []
+        for i in data:
+            prdcd_num_str = str(i)
+            k = re.compile('data-prdcd="\d+')
+            prdcd_number = str(k.search(prdcd_num_str).group()).replace('data-prdcd="', '')
+            prdcd_list.append(prdcd_number)
+        prdcd_list = list(set(prdcd_list))
+        print(prdcd_list)
+        return prdcd_list
 
-    return prdcd_list
+    except Exception as e:
+        print("Error for URL")
+        return None
 
 def get_request_url(deal_number, prdcd_number, page_number):
     url1 = 'http://www.gsshop.com/mi15/knownew/revw/page/revwList.gs?prdid='
@@ -118,7 +120,7 @@ def dataHandling(soup,deal_number):
         df_select.append(select)
 
     # feed_code 부여하기
-    codes = soup.select('span.writer')
+    codes = soup.select('div.comment-description > div.comment_info > span.writer')
     for code in codes:
         code_imsi = str(code.text)
         code_imsi = code_imsi.replace('*', '')
@@ -126,9 +128,9 @@ def dataHandling(soup,deal_number):
         code_sum = 'GSshop' + '%s_' % (deal_number) + code_imsi
         df_feed_code.append(code_sum)
 
-    print(len(df_review), len(df_star), len(df_date), len(df_product))
+    print(len(df_feed_code), len(df_review), len(df_star), len(df_date), len(df_product), len(df_select))
 
-    if len(df_review) == len(df_star) == len(df_date) == len(df_product):
+    if len(df_feed_code) == len(df_review) == len(df_star) == len(df_date) == len(df_product):
         pass
     else:
         return None
@@ -151,19 +153,29 @@ def main():
         for p in prdcd_list:
             prdcd_number = str(p)
 
-            for i in range(1, 800):
+            for i in range(1, 1000):
                 page_number = str(i)
                 soup = get_request_url(deal_number, prdcd_number, page_number)
-                df1, df_date = dataHandling(soup, deal_number)
-                data_result = pd.concat([data_result, df1], axis=0)
+
+                try :
+                    df1, df_date = dataHandling(soup, deal_number)
+                except Exception as e:
+                    print("Error for dataHandling")
+
                 if len(df_date) == 0:
                     break
+                try :
+                    data_result = pd.concat([data_result, df1], axis=0)
+                except Exception as e:
+                    print("Error during concat")
+
+
 
         #       print(data_result)
-        data_result.to_csv('요가복_data_GSshop_%s.csv'%(deal_number), mode='w', encoding='utf-8', index=False)
+        data_result.to_csv('C:/Users/leevi/Downloads/data_GSshop_%s.csv'%(deal_number), mode='w', encoding='utf-8', index=False)
         print('저장 완료')
-
 
 
 if __name__ == "__main__":
     main()
+
