@@ -18,7 +18,7 @@ import shutil
 import sys
 import pandas as pd
 
-dataset = pd.read_csv("C:/pythondata/youtube_info_2030_ilsangfile.csv", encoding='utf-8')
+dataset = pd.read_excel("C:/Users/leevi/Downloads/운동화_URL_ALL.xlsx", encoding='utf-8')
 
 driver = webdriver.Chrome("c:/chromedriver")
 srt_download_path = 'c:/pythondata'
@@ -106,27 +106,3 @@ srt_df = df({'language': subtitle_language, \
              'video_id': video_id_list, \
              'filename': subtitle_filename})
 
-
-# 형태소 분석(명사 추출) 후 데이터를 파일로 저장한다 
-import pandas as pd
-from konlpy.tag import Twitter
-from collections import Counter
-
-f = open("C:/pythondata/2030_youtube_all.txt",'r',encoding='UTF8')
-text = f.read()
-
-nlp = Twitter()
-nouns = nlp.nouns(text)
-count = Counter(nouns)
-
-a = []
-b = []
-for k in count.items():
-    a.append(k[0])
-    b.append(k[1])
-
-df2 = pd.DataFrame({'단어':a, '빈도수':b})
-df2 = df2.sort_values(by='빈도수', ascending=False)
-print(df2)
-
-df2.to_csv('c:/pythondata/2030_all_nouns_parsing.csv', mode = 'w', encoding='utf-8', index= False)

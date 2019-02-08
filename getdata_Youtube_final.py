@@ -1,15 +1,15 @@
-# keyword 검색 결과에 나오는 동영상 이름, url, 재생시간, 유튜버 이름등 정보를 크롤링 하고 csv로 저장한다
+# keyword 검색 결과에 나오는 동영상 이름, url, 재생시간, 유튜버 이름등 정보를 크롤링 하고 엑셀로 저장한다
 
-from bs4 import BeautifulSoup  # html 소스를 해부하기 위한 뷰숲
+from bs4 import BeautifulSoup 
 from selenium.webdriver.common.keys import Keys
-from pandas import DataFrame as df  # dataframe 생성을 위함
+from pandas import DataFrame as df 
 import pandas as pd
-import chardet  # pandas와 함께
-import lxml  # xml 처리 모듈인 lxml
-import requests  # 크롤링 하려는 url의 response를 가져오기 위한 requests
-import time  # time.sleep을 위함
+import chardet 
+import lxml  
+import requests  
+import time 
 import csv
-import re  # 정규표현식
+import re 
 from urllib.request import urlopen
 import datetime
 from selenium import webdriver
@@ -174,17 +174,15 @@ def get_all_info(keyword, dataset):
 
 
 def main():
-    keyword = '롱패딩'
-    num_pagedown = 2
+    num_pagedown = 5
+    keyword = '스니커즈' 추천'
 
     dataset = get_basic_info(keyword, num_pagedown)
     dataset2 = get_all_info(keyword, dataset)
     info_dataset = pd.merge(dataset, dataset2, on='url')
-    info_dataset.to_csv('c:/pythondata/info_dataset_youtube_%s.csv' % (keyword), mode='w', encoding='utf-8',
-                        index=False)
-    print('--- save dataset as csv file : done! ---"')
+    info_dataset.to_excel('C:/Users/leevi/Downloads/info_dataset_youtube_%s.xlsx' % (keyword))
+    print('--- save dataset as excel file : done! ---"')
 
 
 if __name__ == "__main__":
     main()
-
