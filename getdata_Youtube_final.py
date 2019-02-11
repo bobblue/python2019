@@ -174,8 +174,8 @@ def get_all_info(keyword, dataset):
 
 
 def main():
-    num_pagedown = 5
-    keyword = '스니커즈' 추천'
+    num_pagedown = 10
+    keyword = '스니커즈 추천'
 
     dataset = get_basic_info(keyword, num_pagedown)
     dataset2 = get_all_info(keyword, dataset)
