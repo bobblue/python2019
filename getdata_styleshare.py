@@ -45,7 +45,6 @@ def get_information(url, keyword):
         for i in contents:
             con = i.text
             con = con.replace('\n', '')
-            con = con.replace(' ', '')
             content.append(con)
     except Exception as e:
         content.append('정보없음')
