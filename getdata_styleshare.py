@@ -9,7 +9,7 @@ import csv
 from itertools import count
 
 
-def get_information(url):
+def get_information(url, keyword):
     try:
         req = requests.get(url)
         html = req.text
@@ -71,7 +71,7 @@ def get_information(url):
         comment_count.append('정보없음')
         print("comment_count 정보없음")
 
-    df2 = pd.DataFrame({'product_name': productname, 'username': username, 'content': content, 'like_count': like_count,
+    df2 = pd.DataFrame({'keyword': keyword, 'product_name': productname, 'username': username, 'content': content, 'like_count': like_count,
                         'comment_count': comment_count, 'url': url})
     return df2
 
@@ -108,10 +108,9 @@ def get_data(url):
     return df1
 
 
-def get_url_dataframe():
+def get_url_dataframe(keyword):
     data_result = pd.DataFrame()
     for i in range(0, 20000):
-        keyword = '운동화'
         page = str(i * 20)
         url = make_url(page, keyword)
         df1 = get_data(url)
@@ -120,24 +119,27 @@ def get_url_dataframe():
         else:
             pass
         data_result = pd.concat([data_result, df1], axis=0)
-    data_result.to_excel('C:/Users/leevi/Downloads/styleshare_{}_URL.xlsx'.format(keyword), index=False)
-    print('ULR 정보 저장 완료')
+    #data_result.to_excel('C:/Users/leevi/Downloads/styleshare_{}_URL.xlsx'.format(keyword), index=False)
+    #print('ULR 정보 저장 완료')
     data = data_result
-    return data, keyword
+    return data
 
 
 def main():
-    data, keyword = get_url_dataframe()
-    data_result = pd.DataFrame()
-    for url in data['url_list']:
-        try:
-            df2 = get_information(url)
-        except Exception as e:
-            print("Error for URL")
+    keyword_list = ['운동화', '스니커즈', '슬립온', '샌들', '슬리퍼']
 
-        data_result = pd.concat([data_result, df2], axis=0)
-    data_result.to_excel('C:/Users/leevi/Downloads/styleshare_{}_RESULT.xlsx'.format(keyword), index=False)
-    print('RESULT 저장 완료')
+    for keyword in keyword_list : 
+        data = get_url_dataframe(keyword)
+        data_result = pd.DataFrame()
+        for url in data['url_list']:
+            try:
+                df2 = get_information(url, keyword)
+            except Exception as e:
+                print("Error for URL")
+
+            data_result = pd.concat([data_result, df2], axis=0)
+        data_result.to_excel('C:/Users/leevi/Downloads/styleshare_{}_RESULT.xlsx'.format(keyword), index=False)
+        print('{} RESULT 저장 완료'.format(keyword))
 
 
 if __name__ == "__main__":
