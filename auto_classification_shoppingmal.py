@@ -90,6 +90,7 @@ for sentence in df_content['content'] :
             design_c_yes = [s for s in words if i in s]
             if len(design_c_yes) > 0:
                 design_c.append(design_c_yes)
+
         for i in color : 
             color_yes = [s for s in words if i in s] 
             if len(color_yes) > 0 :
@@ -123,7 +124,7 @@ for sentence in df_content['content'] :
         print("에러문장")
         print(sentence)
 
-df_positive = pd.DafaFrame(data= {'size_c' : len(size_c), \
+df_positive = pd.DataFrame(data= {'size_c' : len(size_c), \
 'price_c' : len(price_c), \
 'light_c' : len(light_c), \
 'season_c' : len(season_c),\
@@ -133,18 +134,17 @@ df_positive = pd.DafaFrame(data= {'size_c' : len(size_c), \
 'present_c' : len(present_c),\
 'mode_c' : len(mode_c),\
 'feel_c' : len(feel_c),\
-'couple_c' : len(couple_c)})
+'couple_c' : len(couple_c)}, index=[0])
 
 print(df_positive)
 
-df_negative = pd.DafaFrame(data ={'quality_neg_c': len(quality_neg_c),\
+df_negative = pd.DataFrame(data ={'quality_neg_c': len(quality_neg_c),\
 'hard_neg_c' : len(hard_neg_c),\
 'feel_neg_c': len(feel_neg_c),\
 'price_neg_c'  : len(price_neg_c),\
-'gapoom_neg_c' :  len(gapoom_neg_c)})
+'gapoom_neg_c' :  len(gapoom_neg_c)}, index=[0])
 
 print(df_negative)
-
 
 
 
