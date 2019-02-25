@@ -95,15 +95,22 @@ def get_data(url):
     url_each = soup.select('a.move-to-fullview')
 
     result = []
+    date_list = []
     for i in url_each:
         each_shop = i.get('href')
         # print(each_shop)
         url_front = 'https://www.stylesha.re'
         reviewpage_url = url_front + each_shop
         result.append(reviewpage_url)
+        
+    dates = soup.select('p.created-at')
+    for i in dates :
+        date = i.text
+        date_list.append(date)
 
-    df1 = pd.DataFrame({'url_list': result})
+    df1 = pd.DataFrame({'url': result, 'date':date_list})
     print(len(df1))
+    #print(df1)
     return df1
 
 
@@ -126,22 +133,26 @@ def get_url_dataframe(keyword):
 
 def main():
     keyword_list = ['운동화', '스니커즈', '슬립온', '샌들', '슬리퍼']
+    #keyword_list = ['운동화']
 
     for keyword in keyword_list : 
         data = get_url_dataframe(keyword)
         data_result = pd.DataFrame()
-        for url in data['url_list']:
+        for url in data['url']:
             try:
                 df2 = get_information(url, keyword)
             except Exception as e:
                 print("Error for URL")
 
             data_result = pd.concat([data_result, df2], axis=0)
-        data_result.to_excel('C:/Users/leevi/Downloads/styleshare_{}_RESULT.xlsx'.format(keyword), index=False)
+        data_all = pd.merge(data, data_result)   
+        data_all.to_excel('C:/Users/leevi/Downloads/styleshare_{}_RESULT.xlsx'.format(keyword), index=False)
         print('{} RESULT 저장 완료'.format(keyword))
 
 
 if __name__ == "__main__":
     main()
+
+
 
 
