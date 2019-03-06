@@ -8,7 +8,7 @@ FROM
 (SELECT COUNT(*) AS feed_count
 FROM musinsa_review
 WHERE table_index LIKE ('%spring%')
-AND (content REGEXP ('작아|작은|작긴|끼는|끼네|큰|커|크긴|남네|작음|작게|낑겨|껴|작네|크네|타이트|아파|아픈|좁은')
+AND (content REGEXP ('작아|작은|작긴|끼는|끼네|크긴|남네|작음|작게|낑겨|작네|크네|타이트|아파|아픈|좁은')
 	OR (content REGEXP ('사이즈') AND content REGEXP ('애매|주의|실수')))
 AND brand = @brand
 ) AS size_neg
