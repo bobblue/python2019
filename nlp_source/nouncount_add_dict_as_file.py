@@ -1,3 +1,5 @@
+# 단어를 엑셀파일 형태로 불러와서 twitter에 추가한다
+# 명사추출 후 noun count 결과를 저장한다 
 
 import pandas as pd
 from konlpy.tag import Twitter
