@@ -1,6 +1,4 @@
 
-# -*- coding: utf-8 -*-
-
 import pandas as pd
 from konlpy.tag import Twitter
 from collections import Counter
