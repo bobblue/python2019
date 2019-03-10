@@ -26,20 +26,25 @@ print()
 f = month_df.loc[month_df ['gender'] == 'f', :]
 m = month_df.loc[month_df ['gender'] == 'm', :]
 
-f_json = {'10대' : {'pc' : sum(f.loc[0:2, :]['month_pc']), "mobile" : sum(f.loc[0:2, :]['month_mobile'])} }
-f_json.update({'20대' : {'pc' : sum(f.loc[3:6, :]['month_pc']), "mobile" : sum(f.loc[3:6, :]['month_mobile']) }})
-f_json.update({'30대' : {'pc' : sum(f.loc[7:9, :]['month_pc']), "mobile" : sum(f.loc[7:9, :]['month_mobile']) }})
-f_json.update({'40대이상' : {'pc' :sum(f.loc[10:, :]['month_pc']), "mobile" :sum(f.loc[10:, :]['month_mobile']) }})
+f_json = {'10대' : {'f_pc' : sum(f.loc[0:2, :]['month_pc']), "f_mobile" : sum(f.loc[0:2, :]['month_mobile'])} }
+f_json.update({'20대' : {'f_pc' : sum(f.loc[3:6, :]['month_pc']), "f_mobile" : sum(f.loc[3:6, :]['month_mobile']) }})
+f_json.update({'30대' : {'f_pc' : sum(f.loc[7:9, :]['month_pc']), "f_mobile" : sum(f.loc[7:9, :]['month_mobile']) }})
+f_json.update({'40대이상' : {'f_pc' :sum(f.loc[10:, :]['month_pc']), "f_mobile" :sum(f.loc[10:, :]['month_mobile']) }})
 
 print('여성 검색량(최근 한 달)')
 print(pd.DataFrame(f_json))
 print('---------------'*3)
 print()
 
-m_json = {'10대' : {'pc' : sum(m.loc[0:2, :]['month_pc']), "mobile" : sum(m.loc[0:2, :]['month_mobile'])} }
-m_json.update({'20대' : {'pc' : sum(m.loc[3:6, :]['month_pc']), "mobile" : sum(m.loc[3:6, :]['month_mobile']) }})
-m_json.update({'30대' : {'pc' : sum(m.loc[7:9, :]['month_pc']), "mobile" : sum(m.loc[7:9, :]['month_mobile']) }})
-m_json.update({'40대이상' : {'pc' :sum(m.loc[10:, :]['month_pc']), "mobile" :sum(m.loc[10:, :]['month_mobile']) }})
+m_json = {'10대' : {'m_pc' : sum(m.loc[0:2, :]['month_pc']), "m_mobile" : sum(m.loc[0:2, :]['month_mobile'])} }
+m_json.update({'20대' : {'m_pc' : sum(m.loc[3:6, :]['month_pc']), "m_mobile" : sum(m.loc[3:6, :]['month_mobile']) }})
+m_json.update({'30대' : {'m_pc' : sum(m.loc[7:9, :]['month_pc']), "m_mobile" : sum(m.loc[7:9, :]['month_mobile']) }})
+m_json.update({'40대이상' : {'m_pc' :sum(m.loc[10:, :]['month_pc']), "m_mobile" :sum(m.loc[10:, :]['month_mobile']) }})
 
 print('남성 검색량(최근 한 달)')
 print(pd.DataFrame(m_json))
+
+with pd.ExcelWriter('naverkeyword_cnt.xlsx') as writer:
+    year_df.to_excel(writer, sheet_name='Sheet1')  # Default position, cell A1.
+    pd.DataFrame(f_json).to_excel(writer, sheet_name='Sheet1', startcol=5)
+    pd.DataFrame(m_json).to_excel(writer, sheet_name='Sheet1', startcol=5, startrow=5)
