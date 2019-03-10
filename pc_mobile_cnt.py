@@ -15,7 +15,31 @@ oneyear_date = info[0]['monthlyProgressList']['monthlyLabel']
 title = info[0]['relKeyword']
 
 month_df = pd.DataFrame({'age':age, 'gender':gender, 'month_pc':month_pc, 'month_mobile':month_mobile})
-print(month_df)
+#print(month_df)
 
 year_df = pd.DataFrame({'month':oneyear_date, 'pc':oneyear_pc, 'mobile':oneyear_mobile})
+print('월별 검색량 변화량')
 print(year_df)
+print('---------------'*3)
+print()
+
+f = month_df.loc[month_df ['gender'] == 'f', :]
+m = month_df.loc[month_df ['gender'] == 'm', :]
+
+f_json = {'10대' : {'pc' : sum(f.loc[0:2, :]['month_pc']), "mobile" : sum(f.loc[0:2, :]['month_mobile'])} }
+f_json.update({'20대' : {'pc' : sum(f.loc[3:6, :]['month_pc']), "mobile" : sum(f.loc[3:6, :]['month_mobile']) }})
+f_json.update({'30대' : {'pc' : sum(f.loc[7:9, :]['month_pc']), "mobile" : sum(f.loc[7:9, :]['month_mobile']) }})
+f_json.update({'40대이상' : {'pc' :sum(f.loc[10:, :]['month_pc']), "mobile" :sum(f.loc[10:, :]['month_mobile']) }})
+
+print('여성 검색량(최근 한 달)')
+print(pd.DataFrame(f_json))
+print('---------------'*3)
+print()
+
+m_json = {'10대' : {'pc' : sum(m.loc[0:2, :]['month_pc']), "mobile" : sum(m.loc[0:2, :]['month_mobile'])} }
+m_json.update({'20대' : {'pc' : sum(m.loc[3:6, :]['month_pc']), "mobile" : sum(m.loc[3:6, :]['month_mobile']) }})
+m_json.update({'30대' : {'pc' : sum(m.loc[7:9, :]['month_pc']), "mobile" : sum(m.loc[7:9, :]['month_mobile']) }})
+m_json.update({'40대이상' : {'pc' :sum(m.loc[10:, :]['month_pc']), "mobile" :sum(m.loc[10:, :]['month_mobile']) }})
+
+print('남성 검색량(최근 한 달)')
+print(pd.DataFrame(m_json))
