@@ -89,7 +89,7 @@ def main():
             break
         data_result = pd.concat([data_result, df1], axis=0)
 
-    data_result.to_csv('data_navershopping_%s.csv' % (deal_number), mode='w', encoding='utf-8', index=False)
+    data_result.to_excel('C:/Users/leevi/Downloads/data_navershopping_%s.xlsx' % (deal_number), index=False)
     print('저장 완료')
 
 if __name__ == "__main__":
