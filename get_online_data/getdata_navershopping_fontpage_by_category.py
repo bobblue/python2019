@@ -1,10 +1,24 @@
-# 네이버 쇼핑 메인 페이지 크롤러 만드는 중
+# 네이버 쇼핑 메인 페이지 정보 가지고 오는 크롤러 
 
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
 
+def get_brand(df):
+    title_list = list(df['title'])
+    brand = []
+    for i in title_list :
+        p = re.compile('^[^, ]+')
+        result = p.findall(i)
+        result = str(result)
+        result = result.replace('[\'','')
+        result = result.replace('\']','')
+        result = result.replace('[]', 'None')
+        brand.append(result)
+
+    brand_df = pd.DataFrame({'brand':brand})
+    return brand_df
 
 def request_url(category_num, page):
     url01 = 'https://search.shopping.naver.com/search/category.nhn?pagingIndex='
@@ -87,16 +101,13 @@ def get_information(category_name, info):
 
 def main():
     result = []
-    root = 'C:/Users/leevi/Downloads/'
-    category_num_list = ['100', '101', '102', '103', '104', '105', '108']
-    category_name_list = ['침실가구', '거실가구', '주방가구', '수납가구', '아동주니어가구', '서재사무용가구', '인테리어소품']
 
     for idx, num in enumerate(category_num_list):
         category_name = category_name_list[idx]
         category_num = num
         print(idx)
         print(category_name, category_num)
-        for page in range(1, 101):
+        for page in range(1, page_max):
             info = request_url(category_num, page)
             list_of_all_info = get_information(category_name, info)
             result.extend(list_of_all_info)
@@ -105,10 +116,18 @@ def main():
             #print(result)
 
     df = pd.DataFrame(result)
-    df.to_excel(root + '네이버쇼핑_프론트.xlsx', index=False)
+    brand_df = get_brand(df)
+    result = pd.concat([df, brand_df], axis=1)
+    result.to_excel(root + '네이버쇼핑_프론트.xlsx', index=False)
     print('저장 완료! ')
 
 
 if __name__ == "__main__":
+    root = 'C:/Users/leevi/Downloads/'
+    #category_num_list = ['100', '101']
+    #category_name_list = ['침실가구', '거실가구']
+    category_num_list = ['100', '101', '102', '103', '104', '105', '108']
+    category_name_list = ['침실가구', '거실가구', '주방가구', '수납가구', '아동주니어가구', '서재사무용가구', '인테리어소품']
+    page_max = 101
     main()
 
