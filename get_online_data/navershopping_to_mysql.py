@@ -10,7 +10,7 @@ from itertools import count
 
 
 def conn_nice():
-    engine = create_engine()
+    engine = create_engine() # 엔진정보 입력해야함
     conn = engine.connect()
     return conn
 
@@ -135,11 +135,10 @@ def main():
     data_result['data_for'] = data_for
     data_result['crawling_date'] = crawling_date
     data_result['option'] = option
-    print(data_result)
+    #print(data_result)
 
     #data_result.to_excel('C:/Users/leevi/Downloads/data_navershopping_%s.xlsx' % (deal_number), index=False)
     engine = conn_nice()
-
     try:
         data_result.to_sql(name = 'online_shop_review', con=engine, if_exists='append', index=False) #원래 있는 db에 넣기~
         print('저장 완료')
