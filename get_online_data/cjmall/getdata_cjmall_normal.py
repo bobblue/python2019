@@ -2,7 +2,7 @@ import json
 from urllib.request import urlopen
 import pandas as pd
 
-# 일반 구매평 가져오기 실패ㅜㅜ
+# 일반 구매평
 def get_data(normal_url):
     try:
         data = urlopen(normal_url)
