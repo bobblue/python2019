@@ -1,0 +1,150 @@
+import requests
+import datetime
+import pandas as pd
+from sqlalchemy import create_engine
+import pymysql
+from bs4 import BeautifulSoup
+import re
+import csv
+from itertools import count
+
+def conn_nice():
+    engine = create_engine(encoding='utf-8')
+    conn = engine.connect()
+    return conn
+
+
+def get_infomation(url_origin, url, deal_number, number):
+    try:
+        req = requests.post(url)
+        html = req.text
+        soup = BeautifulSoup(html, 'html.parser')
+        #print("URL request Success")
+    except Exception as e:
+        print("Error for URL")
+        
+    try:
+        req2 = requests.get(url_origin)
+        html2 = req2.text
+        soup2 = BeautifulSoup(html2, 'html.parser')
+        #print("2 URL request Success")
+    except Exception as e:
+        print("2 Error for URL")
+    # 상품이름
+    name = soup2.find('meta', {'property': 'og:title'}).get('content')
+    name = name.replace(': 네이버쇼핑', '')
+    
+    # username = []
+    title = []
+    content = []
+    star = []
+    date = []
+    source = []  # description으로 활용할 예정
+    product_name = []  # info 테이블에 정보 있음
+    key_code = []
+    review_code = []
+
+    # 유저이름
+    usernames = soup.select('span.info > span.name')
+
+    for j in usernames:
+        j = j.text
+        # username.append(j)
+        number += 1
+        key_code.append('navershopping' + '_' + str(deal_number))
+        review_code.append('navershopping' + '_' + str(deal_number) + '_' + str(number))
+        # feed_code.append(deal_number + '_'+ str(number))
+        product_name.append(name)
+
+    titles = soup.select('div.atc_area > p.subjcet')
+    for j in titles:
+        j = j.text
+        title.append(j)
+        
+    contents = soup.select('div.atc_area > div.atc')
+    for j in contents:
+        j = j.text
+        content.append(j)
+
+    rates = soup.select('span.curr_avg')
+    for j in rates:
+        j = j.text
+        star.append(j)
+
+    dates = soup.select('div.atc_area > div > span.date')
+    for j in dates:
+        j = j.text
+        j = j[0:10]
+        j = j.replace('.', '-')
+        date.append(j)
+
+    sources = soup.select('span.info > span.path')
+    for j in sources:
+        j = j.text
+        source.append(j)
+
+    if len(title) == len(content) == len(star) == len(date) == len(source):
+        pass
+    else:
+        return None
+
+    df1 = pd.DataFrame({'review_code': review_code, 'key_code': key_code, 'title': title, 'content': content, 'star': star,'date': date, 'description': source})
+
+    return df1, date, number
+
+
+def make_proper_url(product_num):
+    url1 = 'https://search.shopping.naver.com/detail/review_list.nhn?nvMid='
+    deal_number = str(product_num)
+    url_ = url1 + deal_number
+    #print(url_)
+    return url_, deal_number
+
+
+def main():
+
+    product_list = ['18531292720','18531304320','18531420160','18531445519','18531447456','18531449561']
+    for product_num in product_list:
+        data_result = pd.DataFrame()
+        number = 0
+        url_origin = 'https://search.shopping.naver.com/detail/detail.nhn?nv_mid=' + str(product_num)
+        product_num = str(product_num)
+        url_, deal_number = make_proper_url(product_num)
+        for i in range(1, 900):
+            page_number = i
+            url2 = '&reviewSort=accuracy&reviewType=all&ligh=true'
+            url = url_ + '&page=' + str(page_number) + url2
+            try:
+                df1, date, number = get_infomation(url_origin, url, deal_number, number)
+            except Exception as e:
+                break
+            if len(date) == 0:
+                break
+            data_result = pd.concat([data_result, df1], axis=0)
+
+        now = datetime.datetime.now()
+        crawling_date = now.strftime('%Y-%m-%d')
+        data_result['crawling_date'] = crawling_date
+
+        engine = conn_nice()
+        try:
+            data_result.to_sql(name = 'shoppingmal_review', con=engine, if_exists='append', index=False) #원래 있는 db에 넣기~
+            if len(data_result) == 0 :
+                print(product_num + ' 이건 네이버 리뷰가 아니야~')
+            else :
+                print(product_num + ' SQL 저장 완료')
+        except Exception as e:
+            print('에러나는 이유')
+            print(e)
+
+    #data_result.to_excel('C:/Users/leevi/Downloads/data_navershopping_0401.xlsx', index=False)
+    #print('엑셀 파일 저장 완료')
+
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+cp
